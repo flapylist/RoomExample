@@ -12,6 +12,7 @@ import android.widget.Toast;
 import io.reactivex.CompletableObserver;
 import io.reactivex.CompletableSource;
 import io.reactivex.SingleObserver;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         etID=findViewById(R.id.etID);
         etName=findViewById(R.id.etName);
         etSalary=findViewById(R.id.etSalary);
+        CompositeDisposable compositeDisposable=new CompositeDisposable();
 
         btnAdd=findViewById(R.id.btnAdd);
         btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -43,15 +45,15 @@ public class MainActivity extends AppCompatActivity {
                     employee.name = etName.getText().toString();
                     employee.salary = Integer.parseInt(etSalary.getText().toString());
 
-                    rxManager.insert(employee)
+                    Disposable insertDispose= rxManager.insert(employee)
                             .subscribeWith(new DisposableSingleObserver<Long>() {
                                 @Override
                                 public void onSuccess(Long aLong) {
-                                    rxManager.getByID(aLong)
+                                   Disposable getDispose= rxManager.getByID(aLong)
                                             .subscribeWith(new DisposableSingleObserver<Employee>() {
                                                 @Override
                                                 public void onSuccess(Employee employee) {
-                                                    Log.d("TAG", "ID: " + employee.id + " Name: " + employee.name + " Salary: " + employee.salary);
+                                                    Toast.makeText(getApplicationContext(),"Added employee with ID: "+employee.id,Toast.LENGTH_SHORT).show();
                                                 }
 
                                                 @Override
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                 }
                                             });
+                                    compositeDisposable.add(getDispose);
                                 }
 
                                 @Override
@@ -66,8 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
                                 }
                             });
+                    compositeDisposable.add(insertDispose);
+
                 }
                 else Toast.makeText(getApplicationContext(),"Fields are empty",Toast.LENGTH_SHORT).show();
+                compositeDisposable.dispose();
             }
         });
 
