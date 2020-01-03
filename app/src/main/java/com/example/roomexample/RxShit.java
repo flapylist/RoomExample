@@ -29,6 +29,7 @@ public class RxShit {
     public Single<Employee> getByID(Long id){
         return Single.create(e->{
             Employee employee=dao.getById(id);
+
             e.onSuccess(employee);
         });
     }

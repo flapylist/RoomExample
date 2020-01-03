@@ -1,5 +1,6 @@
 package com.example.roomexample;
 
+import androidx.annotation.MainThread;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -11,11 +12,14 @@ import android.widget.Toast;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.CompletableSource;
+import io.reactivex.Scheduler;
 import io.reactivex.SingleObserver;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,10 +50,14 @@ public class MainActivity extends AppCompatActivity {
                     employee.salary = Integer.parseInt(etSalary.getText().toString());
 
                     Disposable insertDispose= rxManager.insert(employee)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribeWith(new DisposableSingleObserver<Long>() {
                                 @Override
                                 public void onSuccess(Long aLong) {
                                    Disposable getDispose= rxManager.getByID(aLong)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
                                             .subscribeWith(new DisposableSingleObserver<Employee>() {
                                                 @Override
                                                 public void onSuccess(Employee employee) {
@@ -73,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 else Toast.makeText(getApplicationContext(),"Fields are empty",Toast.LENGTH_SHORT).show();
-                compositeDisposable.dispose();
+
             }
         });
 
