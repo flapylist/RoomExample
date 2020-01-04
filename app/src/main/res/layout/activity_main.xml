@@ -10,12 +10,6 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/etID"
-        android:hint="ID">
-    </EditText>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/etName"
         android:hint="Name">
     </EditText>

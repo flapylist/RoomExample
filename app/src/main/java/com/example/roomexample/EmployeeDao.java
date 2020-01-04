@@ -11,10 +11,10 @@ import java.util.List;
 @Dao
 public interface EmployeeDao {
 
-    @Query("SELECT * FROM employee")
+    @Query("SELECT * FROM employees")
     List<Employee> getAll();
 
-    @Query("SELECT * FROM employee WHERE id = :id")
+    @Query("SELECT * FROM employees WHERE id = :id")
     Employee getById(long id);
 
     @Insert

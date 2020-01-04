@@ -20,9 +20,10 @@ public class RxShit {
 
     public Single<Long> insert(Employee employee){
         return Single.create(s-> {
+
             dao.insert(employee);
 
-            s.onSuccess(employee.id);
+            s.onSuccess(employee.getId());
         });
     }
 

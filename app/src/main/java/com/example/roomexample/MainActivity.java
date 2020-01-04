@@ -24,14 +24,13 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity {
 
     RxShit rxManager;
-    EditText etID,etName,etSalary;
+    EditText etName,etSalary;
     Button btnAdd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rxManager=new RxShit();
-        etID=findViewById(R.id.etID);
         etName=findViewById(R.id.etName);
         etSalary=findViewById(R.id.etSalary);
         CompositeDisposable compositeDisposable=new CompositeDisposable();
@@ -40,14 +39,10 @@ public class MainActivity extends AppCompatActivity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ((etID.getText().toString() != null && !etID.getText().toString().isEmpty()) &&
-                        (etName.getText().toString() != null && !etName.getText().toString().isEmpty()) &&
-                        etSalary.getText().toString() != null && !etSalary.getText().toString().isEmpty()) {
-
+                if (!etName.getText().toString().isEmpty() && !etSalary.getText().toString().isEmpty()) {
                     Employee employee = new Employee();
-                    employee.id = Long.parseLong(etID.getText().toString());
-                    employee.name = etName.getText().toString();
-                    employee.salary = Integer.parseInt(etSalary.getText().toString());
+                    employee.setName(etName.getText().toString());
+                    employee.setSalary(Integer.parseInt(etSalary.getText().toString()));
 
                     Disposable insertDispose= rxManager.insert(employee)
                             .subscribeOn(Schedulers.io())
@@ -61,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                                             .subscribeWith(new DisposableSingleObserver<Employee>() {
                                                 @Override
                                                 public void onSuccess(Employee employee) {
-                                                    Toast.makeText(getApplicationContext(),"Added employee with ID: "+employee.id,Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getApplicationContext(),"Added employee with ID: "+employee.getId(),Toast.LENGTH_SHORT).show();
                                                 }
 
                                                 @Override
@@ -78,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                     compositeDisposable.add(insertDispose);
-
                 }
                 else Toast.makeText(getApplicationContext(),"Fields are empty",Toast.LENGTH_SHORT).show();
 
