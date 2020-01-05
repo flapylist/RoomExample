@@ -44,27 +44,29 @@ public class MainActivity extends AppCompatActivity {
                     employee.setName(etName.getText().toString());
                     employee.setSalary(Integer.parseInt(etSalary.getText().toString()));
 
-                    Disposable insertDispose= rxManager.insert(employee)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
+                    rxManager.insert(employee)
                             .flatMap(aLong -> rxManager.getById(aLong))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeWith(new DisposableSingleObserver<Employee>(){
+                            .subscribe(new SingleObserver<Employee>() {
                                 @Override
-                                public void onSuccess(Employee employee){
+                                public void onSubscribe(Disposable d) {
+                                    compositeDisposable.add(d);
+                                }
+
+                                @Override
+                                public void onSuccess(Employee employee) {
                                     Toast.makeText(getApplicationContext(),"Added employee with id "+employee.getId(),Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
-                                public void onError(Throwable e){
+                                public void onError(Throwable e) {
 
                                 }
                             });
-                    compositeDisposable.add(insertDispose);
+
                 }
                 else Toast.makeText(getApplicationContext(),"Fields are empty",Toast.LENGTH_SHORT).show();
-
             }
         });
 
