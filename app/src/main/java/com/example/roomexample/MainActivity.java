@@ -45,30 +45,19 @@ public class MainActivity extends AppCompatActivity {
                     employee.setSalary(Integer.parseInt(etSalary.getText().toString()));
 
                     Disposable insertDispose= rxManager.insert(employee)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .flatMap(aLong -> rxManager.getById(aLong))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeWith(new DisposableSingleObserver<Long>() {
+                            .subscribeWith(new DisposableSingleObserver<Employee>(){
                                 @Override
-                                public void onSuccess(Long aLong) {
-                                   Disposable getDispose= rxManager.getByID(aLong)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribeWith(new DisposableSingleObserver<Employee>() {
-                                                @Override
-                                                public void onSuccess(Employee employee) {
-                                                    Toast.makeText(getApplicationContext(),"Added employee with ID: "+employee.getId(),Toast.LENGTH_SHORT).show();
-                                                }
-
-                                                @Override
-                                                public void onError(Throwable e) {
-
-                                                }
-                                            });
-                                    compositeDisposable.add(getDispose);
+                                public void onSuccess(Employee employee){
+                                    Toast.makeText(getApplicationContext(),"Added employee with id "+employee.getId(),Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
-                                public void onError(Throwable e) {
+                                public void onError(Throwable e){
 
                                 }
                             });

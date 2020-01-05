@@ -3,6 +3,7 @@ package com.example.roomexample;
 import android.app.Application;
 import android.database.Observable;
 import android.util.Log;
+import android.widget.Toast;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -27,11 +28,9 @@ public class RxShit {
         });
     }
 
-    public Single<Employee> getByID(Long id){
-        return Single.create(e->{
-            Employee employee=dao.getById(id);
-
-            e.onSuccess(employee);
+    public Single<Employee> getById(long id){
+        return  Single.create(s -> {
+            s.onSuccess(dao.getById(id));
         });
     }
 
